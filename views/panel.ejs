@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <h1>Panel de Control</h1>
+        <!-- <a href="/logout">Cerrar sesión</a> -->
+    </header>
+
+    <!-- contenido principal -->
+    <div class="main-content">
+        <div class="container">
+            <div class="page-title">
+                <h2>Gestión de Acciones</h2>
+                <button class="btn btn-primary" id="new-action-btn">+ Nueva Acción</button>
+            </div>
+
+            <!-- filtros -->
+            
+
+            <!-- tabla de acciones -->
+            <div class="card">
+                <h3>Lista de Acciones</h3>
+                
+                <table class="actions-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Entidad</th>
+                            <th>Tipo</th>
+                            <th>Fechas</th>
+                            <th>Responsable</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>Reunión de coordinación técnica</td>
+                            <td>Ayuntamiento</td>
+                            <td><span class="badge badge-primary">Reunión/Coordinación</span></td>
+                            <td>05/09/2025 - 05/09/2025</td>
+                            <td>
+                                <div class="badge badge-primary">Saregune</div>
+                                <div class="badge badge-primary">AuzoTV</div>
+                            </td>
+                            <td class="action-buttons">
+                                <span class="action-icon" title="Editar">✏️</span>
+                                <span class="action-icon" title="Eliminar" style="color: var(--danger)">🗑️</span>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card" id="action-form" style="display: none;">
+                <h3 id="form-title">Nueva Acción</h3>
+                
+                <form id="accion-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre">Nombre de la acción *</label>
+                            <input type="text" id="nombre" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="asociacionEntidad">Asociación/Entidad *</label>
+                            <input type="text" id="asociacionEntidad" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="telefono">Teléfono</label>
+                            <input type="tel" id="telefono" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fechaInicio">Fecha de inicio *</label>
+                            <input type="date" id="fechaInicio" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="fechaFin">Fecha de fin *</label>
+                            <input type="date" id="fechaFin" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="horarios">Horarios</label>
+                        <input type="text" id="horarios" class="form-control" placeholder="Ej: De 9:00 a 14:00">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tipoAccion">Tipo de acción *</label>
+                            <select id="tipoAccion" class="form-control" required>
+                                <option value="">Seleccione un tipo</option>
+                                <option value="consulta">Consulta</option>
+                                <option value="jornada">Jornada/Premio uso del espacio</option>
+                                <option value="reunion">Reunión/Coordinación servicio técnico</option>
+                                <option value="formacion">Formación</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Responsable(s) *</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="responsable-saregune" name="responsableAccion" value="Saregune">
+                                    <label for="responsable-saregune">Saregune</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="responsable-elkarteak" name="responsableAccion" value="Elkarteak">
+                                    <label for="responsable-elkarteak">Elkarteak</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="responsable-batekin" name="responsableAccion" value="Batekin">
+                                    <label for="responsable-batekin">Batekin</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="responsable-auzotv" name="responsableAccion" value="AuzoTV">
+                                    <label for="responsable-auzotv">AuzoTV</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="descripcion">Descripción</label>
+                        <textarea id="descripcion" class="form-control" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="web">Web</label>
+                        <input type="url" id="web" class="form-control" placeholder="https://...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <!-- <p><small>* Campos obligatorios</small></p> -->
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="button" class="btn" id="cancel-form">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/app.js"></script>
+</body>
+</html>
