@@ -32,29 +32,46 @@
                         <tr>
                             <th>Nombre</th>
                             <th>Entidad</th>
+                            <th>Email</th>
+                            <th>Telefono</th>
+                            <th>Fecha de inicio</th>
+                            <th>Fecha de fin</th>
+                            <th>Horarios</th>
                             <th>Tipo</th>
-                            <th>Fechas</th>
-                            <th>Responsable</th>
+                            <th>Responsable(s)</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        
-                        <tr>
-                            <td>Reunión de coordinación técnica</td>
-                            <td>Ayuntamiento</td>
-                            <td><span class="badge badge-primary">Reunión/Coordinación</span></td>
-                            <td>05/09/2025 - 05/09/2025</td>
+                    
+                    <tbody id="actions-body">
+                        <% acciones.forEach(accion => { %>
+                        <tr data-id="<%= accion._id %>">
+                            <td><%= accion.nombre %></td>
+                            <td><%= accion.entidad %></td>
+                            <td><%= accion.email %></td>
+                            <td><%= accion.telefono %></td>
+                            <td><%= new Date(accion.fechaInicio).toLocaleDateString('es-ES') %></td>
+                            <td><%= new Date(accion.fechaFin).toLocaleDateString('es-ES') %></td>
+                            <td><%= accion.horarios %></td>
                             <td>
-                                <div class="badge badge-primary">Saregune</div>
-                                <div class="badge badge-primary">AuzoTV</div>
+                                <% 
+                                const tipos = {
+                                    consulta: "Consulta",
+                                    jornada: "Jornada",
+                                    reunion: "Reunión",
+                                    formacion: "Formación",
+                                    otros: "Otros"
+                                };
+                                %>
+                                <%= tipos[accion.tipo] || accion.tipo %>
                             </td>
-                            <td class="action-buttons">
-                                <span class="action-icon" title="Editar">✏️</span>
-                                <span class="action-icon" title="Eliminar" style="color: var(--danger)">🗑️</span>
+                            <td><%= accion.responsables.join(', ') %></td>
+                            <td>
+                                <span class="action-icon edit-icon" title="Editar">✏️</span>
+                                <span class="action-icon delete-icon" title="Eliminar">🗑️</span>
                             </td>
                         </tr>
-
+                        <% }); %>
                     </tbody>
                 </table>
             </div>
@@ -103,6 +120,8 @@
                         <label for="horarios">Horarios</label>
                         <input type="text" id="horarios" class="form-control" placeholder="Ej: De 9:00 a 14:00">
                     </div>
+
+                    
                     
                     <div class="form-row">
                         <div class="form-group">
@@ -158,6 +177,15 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="delete-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <p>¿Seguro que quieres eliminar? Esta acción es irreversible.</p>
+        <button id="confirm-delete" class="btn btn-danger">Eliminar</button>
+        <button id="cancel-delete" class="btn">Cancelar</button>
+      </div>
     </div>
     
     <script src="/app.js"></script>

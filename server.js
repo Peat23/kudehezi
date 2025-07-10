@@ -53,65 +53,63 @@ app.get('/', (req, res) => {
   res.render('login');
 });
 
-
-// Ruta para el formulario de registro
-app.get('/panel', (req, res) => {
-  res.render('panel');
-});
-
-// ruta para anadir un nuevo usuario
-app.post('/anadir', async (req, res) => {
-  const { nombre, email, password } = req.body;
-
+app.get('/panel', async (req, res) => {
   try {
-    const result = await db.collection('usuarios').insertOne({ nombre, email, password });
-    res.status(201).json({ message: 'Usuario añadido', userId: result.insertedId });
+    const acciones = await db.collection('acciones').find().toArray();
+    res.render('panel', { acciones });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al añadir usuario' });
+    console.error('Error al obtener acciones:', error);
+    res.status(500).send('Error del servidor');
   }
 });
 
-
-// ruta para actualizar
-app.put('/actualizar', async (req, res) => {
-  console.log('Body reçu:', req.body); // Ajoute ceci pour debug
-  const { id, nombre, email, password } = req.body;
-
+// CRUD para Acciones
+app.post('/acciones', async (req, res) => {
   try {
-    const result = await db.collection('usuarios').updateOne(
-      { _id: new mongoDb.ObjectId(id) },
-      { $set: { nombre, email, password } }
+    const result = await db.collection('acciones').insertOne(req.body);
+    res.status(201).json({ id: result.insertedId });
+  } catch (error) {
+    console.error('Error al crear acción:', error);
+    res.status(500).json({ error: 'Error al crear acción' });
+  }
+});
+
+app.put('/acciones/:id', async (req, res) => {
+  try {
+    const result = await db.collection('acciones').updateOne(
+      { _id: new mongoDb.ObjectId(req.params.id) },
+      { $set: req.body }
     );
-
-    if (result.modifiedCount > 0) {
-      res.json({ message: 'Usuario actualizado' });
-    } else {
-      res.status(404).json({ message: 'Usuario no encontrado o no se realizaron cambios' });
-    }
+    res.json({ success: result.modifiedCount > 0 });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al actualizar usuario' });
+    console.error('Error al actualizar acción:', error);
+    res.status(500).json({ error: 'Error al actualizar acción' });
   }
 });
 
-// ruta para eliminar un usuario
-// Asegúrate de que el ID del usuario sea un ObjectId válido
-app.delete('/eliminar/:id', async (req, res) => {
-  const userId = req.params.id;
-
+app.delete('/acciones/:id', async (req, res) => {
   try {
-    const result = await db.collection('usuarios').deleteOne({ _id: new mongoDb.ObjectId(userId) });
-
-    if (result.deletedCount > 0) {
-      res.json({ message: 'Usuario eliminado' });
-    } else {
-      res.status(404).json({ message: 'Usuario no encontrado' });
-    }
+    const result = await db.collection('acciones').deleteOne(
+      { _id: new mongoDb.ObjectId(req.params.id) }
+    );
+    res.json({ success: result.deletedCount > 0 });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al eliminar usuario' });
+    console.error('Error al eliminar acción:', error);
+    res.status(500).json({ error: 'Error al eliminar acción' });
   }
 });
+
+// Obtener una acción por ID (pour l’édition)
+app.get('/acciones/:id', async (req, res) => {
+  try {
+    const accion = await db.collection('acciones').findOne({ _id: new mongoDb.ObjectId(req.params.id) });
+    if (!accion) return res.status(404).json({ error: 'Acción no encontrada' });
+    res.json(accion);
+  } catch (error) {
+    console.error('Error al obtener acción:', error);
+    res.status(500).json({ error: 'Error al obtener acción' });
+  }
+});
+
 
 app.listen( PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
