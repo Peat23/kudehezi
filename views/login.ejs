@@ -1,17 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Document</title>
+    <link rel="stylesheet" href="/style.css">
+    <title>Login</title>
 </head>
-<body>
-    <a href="/panel">Ir a panel</a>
-
-    
-
-
-    <script src="app.js"></script>
+<body class="login-body">
+    <div id="login-container">
+        <h2>Iniciar Sesión</h2>
+        
+        <% if (typeof error !== 'undefined') { %>
+            <div id="login-error">
+                <%= error %>
+            </div>
+        <% } %>
+        
+        <form method="POST" action="/login">
+            <div class="form-group">
+                <input type="email" id="email" name="email" placeholder="Email" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" name="password" placeholder="Password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
 </body>
 </html>

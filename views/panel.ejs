@@ -9,19 +9,67 @@
 <body>
     <header>
         <h1>Panel de Control</h1>
-        <!-- <a href="/logout">Cerrar sesión</a> -->
+        <h1>Bienvenido, <%= user.email %></h1>
+        <div class="header-actions">
+            <button class="btn btn-secondary" id="change-password-btn">Cambiar Contraseña</button>
+            <a href="/logout" class="btn btn-danger">Cerrar sesión</a>
+        </div>
     </header>
 
     <!-- contenido principal -->
     <div class="main-content">
         <div class="container">
             <div class="page-title">
-                <h2>Gestión de Acciones</h2>
+                <!--<h2>Gestión de Acciones</h2>-->
                 <button class="btn btn-primary" id="new-action-btn">+ Nueva Acción</button>
             </div>
 
             <!-- filtros -->
-            
+            <div class="card filters-section">
+                <!--<h3>Busquedas y Ordenamientos</h3>-->
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label for="fecha-desde">Fecha desde:</label>
+                        <input type="date" id="fecha-desde" class="form-control">
+                    </div>
+                    <div class="filter-group">
+                        <label for="fecha-hasta">Fecha hasta:</label>
+                        <input type="date" id="fecha-hasta" class="form-control">
+                    </div>
+                    <div class="filter-group">
+                        <label for="buscar-nombre">Buscar por nombre:</label>
+                        <input type="text" id="buscar-nombre" class="form-control" placeholder="Nombre de la acción...">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filtro-tipo">Tipo de acción:</label>
+                        <select id="filtro-tipo" class="form-control">
+                            <option value="">Todos los tipos</option>
+                            <option value="consulta">Consulta</option>
+                            <option value="jornada">Jornada/Premio uso del espacio</option>
+                            <option value="reunion">Reunión/Coordinación servicio técnico</option>
+                            <option value="formacion">Formación</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="ordenar-por">Ordenar por:</label>
+                        <select id="ordenar-por" class="form-control">
+                            <option value="fechaInicio-desc">Fecha de inicio (más reciente)</option>
+                            <option value="fechaInicio-asc">Fecha de inicio (más antigua)</option>
+                            <option value="fechaFin-desc">Fecha de fin (más reciente)</option>
+                            <option value="fechaFin-asc">Fecha de fin (más antigua)</option>
+                            <option value="nombre-asc">Nombre (A-Z)</option>
+                            <option value="nombre-desc">Nombre (Z-A)</option>
+                            <option value="entidad-asc">Entidad (A-Z)</option>
+                            <option value="entidad-desc">Entidad (Z-A)</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" id="aplicar-filtros">Aplicar Filtros</button>
+                        <button class="btn btn-secondary" id="limpiar-filtros">Limpiar</button>
+                    </div>
+                </div>
+            </div>
 
             <!-- tabla de acciones -->
             <div class="card">
@@ -44,9 +92,14 @@
                     </thead>
                     
                     <tbody id="actions-body">
-                        <% acciones.forEach(accion => { %>
+                        <% acciones.forEach((accion) => { %>
                         <tr data-id="<%= accion._id %>">
-                            <td><%= accion.nombre %></td>
+                            <td>
+                                <% if ((accion.descripcion && accion.descripcion.trim()) || (accion.web && accion.web.trim())) { %>
+                                    <span class="action-icon toggle-details" title="Ver detalles">▼</span>
+                                <% } %>
+                            <span class="action-name"><%= accion.nombre %></span>
+                            </td>
                             <td><%= accion.entidad %></td>
                             <td><%= accion.email %></td>
                             <td><%= accion.telefono %></td>
@@ -67,16 +120,30 @@
                             </td>
                             <td><%= accion.responsables.join(', ') %></td>
                             <td>
-                                <span class="action-icon edit-icon" title="Editar">✏️</span>
+                                <span class="action-icon edit-icon" title="Editar">edit</span>
                                 <span class="action-icon delete-icon" title="Eliminar">🗑️</span>
                             </td>
                         </tr>
+                        <% if ((accion.descripcion && accion.descripcion.trim()) || (accion.web && accion.web.trim())) { %>
+                        <tr class="details-row" style="display: none;">
+                            <td colspan="10">
+                                <div class="details-content">
+                                    <% if (accion.descripcion && accion.descripcion.trim()) { %>
+                                        <p><strong>Descripción:</strong></p>
+                                    <% } %>
+                                    <% if (accion.web && accion.web.trim()) { %>
+                                        <p><strong>Web:</strong> <a href="<%= accion.web %>" target="_blank" rel="noopener noreferrer"><%= accion.web %></a></p>
+                                    <% } %>
+                                </div>
+                            </td>
+                        </tr>
+                        <% } %>
                         <% }); %>
                     </tbody>
                 </table>
             </div>
 
-            <div class="card" id="action-form" style="display: none;">
+            <div class="card" id="action-form">
                 <h3 id="form-title">Nueva Acción</h3>
                 
                 <form id="accion-form">
@@ -177,6 +244,33 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <!-- Modal de cambio de contraseña -->
+    <div id="password-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3>Cambiar Contraseña</h3>
+        <form id="password-form">
+          <div class="form-group">
+            <label for="current-password">Contraseña Actual *</label>
+            <input type="password" id="current-password" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="new-password">Nueva Contraseña *</label>
+            <input type="password" id="new-password" class="form-control" required minlength="6">
+            <small>La contraseña debe tener al menos 6 caracteres</small>
+          </div>
+          <div class="form-group">
+            <label for="confirm-password">Confirmar Nueva Contraseña *</label>
+            <input type="password" id="confirm-password" class="form-control" required minlength="6">
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+            <button type="button" class="btn btn-secondary" id="cancel-password">Cancelar</button>
+          </div>
+        </form>
+        <div id="password-message" class="message" style="display:none;"></div>
+      </div>
     </div>
 
     <!-- Modal de confirmation -->
