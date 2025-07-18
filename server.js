@@ -5,8 +5,12 @@ import { dirname } from 'path';
 import mongoDb from 'mongodb';
 import session from 'express-session';
 import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';// Importar dotenv para manejar variables de entorno
 
-const PORT = 3000;
+dotenv.config();
+
+// Configuración de variables de entorno
+const PORT = process.env.PORT ;
 const app = express();
 
 // Configuración de __dirname para ES6
@@ -18,7 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(session({
-  secret: 'mi-secreto',
+  secret: process.env.SECRET, // Clave secreta para la sesión
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false }
@@ -62,6 +66,7 @@ app.get('/', (req, res) => {
   res.render('login');
 });
 
+// Registro de usuario
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await db.collection('users').findOne({ email });
@@ -79,11 +84,13 @@ app.post('/login', async (req, res) => {
   res.redirect('/panel');
 });
 
+// Cerrar sesión
 app.get('/logout', (req, res) => {
   req.session.destroy();
   res.redirect('/');
 });
 
+// Ruta protegida para el panel
 app.get('/panel', requireAuth, noCache, async (req, res) => {
   try {
     const acciones = await db.collection('acciones').find().toArray();
@@ -144,6 +151,7 @@ app.get('/api/acciones', requireAuth, async (req, res) => {
 });
 
 // CRUD para Acciones
+// Crear, Leer, Actualizar y Eliminar acciones
 app.post('/acciones', async (req, res) => {
   try {
     const result = await db.collection('acciones').insertOne(req.body);
@@ -153,6 +161,7 @@ app.post('/acciones', async (req, res) => {
     res.status(500).json({ error: 'Error al crear acción' });
   }
 });
+
 
 app.put('/acciones/:id', async (req, res) => {
   try {
@@ -222,7 +231,7 @@ app.post('/change-password', requireAuth, async (req, res) => {
     // Encriptar la nueva contraseña
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
     
-    // Actualizar la contraseña en la base de datos
+    // Actualizar la contraseña en la base de datosostrando 1 - 10 de 
     const result = await db.collection('users').updateOne(
       { _id: new mongoDb.ObjectId(req.session.user._id) },
       { $set: { password: hashedNewPassword } }

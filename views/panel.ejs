@@ -10,7 +10,9 @@
     <header>
         <h1>Panel de Control</h1>
         <h1>Bienvenido, <%= user.email %></h1>
+        
         <div class="header-actions">
+            <button class="btn btn-primary" id="new-action-btn">+ Nueva Acción</button>
             <button class="btn btn-secondary" id="change-password-btn">Cambiar Contraseña</button>
             <a href="/logout" class="btn btn-danger">Cerrar sesión</a>
         </div>
@@ -19,10 +21,7 @@
     <!-- contenido principal -->
     <div class="main-content">
         <div class="container">
-            <div class="page-title">
-                <!--<h2>Gestión de Acciones</h2>-->
-                <button class="btn btn-primary" id="new-action-btn">+ Nueva Acción</button>
-            </div>
+            
 
             <!-- filtros -->
             <div class="card filters-section">
@@ -91,6 +90,7 @@
                         </tr>
                     </thead>
                     
+                    <!-- cuerpo de la tabla -->
                     <tbody id="actions-body">
                         <% acciones.forEach((accion) => { %>
                         <tr data-id="<%= accion._id %>">
