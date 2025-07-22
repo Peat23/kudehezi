@@ -66,6 +66,18 @@ app.get('/', (req, res) => {
   res.render('login');
 });
 
+// ruta para crear un usuario a traves de thunderclient
+app.post('/register', async (req, res) => {
+    const { email, password } = req.body;
+    const existingUser = await db.collection('users').findOne({ email });
+    if (existingUser) {
+        return res.status(400).json({ error: 'El usuario ya existe' });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.collection('users').insertOne({ email, password: hashedPassword });
+    res.status(201).json({ message: 'Usuario creado exitosamente' });
+});
+
 // Registro de usuario
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
